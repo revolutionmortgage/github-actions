@@ -1,0 +1,36 @@
+name: deploy lambda package
+
+on:
+  workflow_call:
+    inputs:
+      lambda_name:
+        required: true
+        type: string
+      lambda_region:
+        required: true
+        type: string
+      environment:
+        required: true
+        type: string
+    secrets:
+      access_key:
+        required: true
+      access_secret:
+        required: true
+
+jobs:
+  deploy_lambda:
+    name: deploy lambda
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ inputs.environment }}
+    steps:
+      - name: download build artifact for deploying
+        uses: actions/download-artifact@v2
+        with:
+          name: build
+      - name: upload build artifact to lambda
+        run: aws lambda update-function-code --function-name ${{ inputs.lambda_name }} --zip-file fileb://build.zip --region ${{ inputs.lambda_region }}
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.access_key }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.access_secret }}
