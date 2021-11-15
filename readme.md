@@ -8,3 +8,19 @@ https://docs.github.com/en/actions/learn-github-actions/reusing-workflows#callin
 
 ## versioning
 TODO: decide how to version these. most likely git tags
+
+## workflows
+### lambda-deploy
+this just downloads a zip file called "build", which should have a file called "build.zip", which will get pushed to a lambda by name and region.  you have to pass in a github environment name to control how and when a deployment will go out. 
+
+### typescript-build-and-test
+this builds a typescript app up based on a very simple convention.  it runs the following commands on the lts version of node (14.x currently).
+```bash
+yarn install
+yarn build
+yarn test:unit
+# remove dev deps before building zip
+yarn install --production
+zip -r build.zip build node_modules
+# uploads build.zip to github artifact as "build"
+```
