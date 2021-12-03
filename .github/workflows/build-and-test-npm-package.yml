@@ -30,11 +30,5 @@ jobs:
       - name: "validate package version"
         run: |
           gh release view ${{ env.PACKAGE_VERSION }}
-          if [ $? -eq 0 ] then
-            echo "${{ env.PACKAGE_VERSION }} is invalid."
-            exit 1
-          else
-            echo "${{ env.PACKAGE_VERSION }} is valid."
-            exit 0
-          fi
+          exit 0
 
