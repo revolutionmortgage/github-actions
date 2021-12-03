@@ -28,15 +28,13 @@ jobs:
       - name: "set version environment variable"
         run: echo "PACKAGE_VERSION=v$(node -p -e "require('./package.json').version")" >> $GITHUB_ENV
 
-      - name: "get package releases"
-        continue-on-error: true
-        run: |
-          gh release view ${{ env.PACKAGE_VERSION }}
-          echo "PACKAGE_VERSION_EXISTS=1" >> $GITHUB_ENV
-
       - name: "validate package version"
         run: |
-          if [ ${{ env.PACKAGE_VERSION_EXISTS }} -eq 1 ]; then
+          set +e
+          gh release view ${{ env.PACKAGE_VERSION }}
+          export EXIT_CODE=$?
+          set -e
+          if [ $EXIT_CODE }} -eq 0 ]; then
             echo "${{ env.PACKAGE_VERSION }} already exists"
             exit 1
           else
