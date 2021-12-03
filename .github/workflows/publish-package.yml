@@ -15,19 +15,16 @@ jobs:
       NPM_TOKEN: ${{ secrets.npm_token }}
       GITHUB_TOKEN: ${{ secrets.github_token }}
     steps:
-      - name: download build artifact for deploying
-        uses: actions/download-artifact@v2
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
         with:
-          name: build
-
-      - name: Unarchive build
-        run: unzip -q build.zip
+          node-version: "lts/*"
 
       - name: set version environment variable
         run: |
           echo "PACKAGE_VERSION=v$(node -p -e "require('./package.json').version")" >> $GITHUB_ENV
 
+      - run: yarn publish
+
       - name: "Create new release"
         run: gh release create ${{ env.PACKAGE_VERSION }} --notes ""
-
-      - run: yarn publish
