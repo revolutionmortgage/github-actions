@@ -32,9 +32,9 @@ jobs:
           gh release view ${{ env.PACKAGE_VERSION }}
           if [ $? -eq 0 ] then
             echo "${{ env.PACKAGE_VERSION }} is invalid."
-            exit code 1
+            exit 1
           else
             echo "${{ env.PACKAGE_VERSION }} is valid."
-            exit code 0
+            exit 0
           fi
 
