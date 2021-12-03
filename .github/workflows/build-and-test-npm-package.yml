@@ -20,3 +20,9 @@ jobs:
       - run: yarn install
       - run: yarn build
       - run: yarn test:unit
+
+      - name: "validate package version"
+        run: |
+          echo "PACKAGE_VERSION=v$(node -p -e "require('./package.json').version")" >> $GITHUB_ENV
+          gh release list ${{ env.PACKAGE_VERSION }}
+          exit code !$?
