@@ -33,25 +33,23 @@ yarn build
 yarn test:unit
 
 # validate the package version number
-echo "PACKAGE_VERSION=v$(node -p -e "require('./package.json').version")" >> $GITHUB_ENV
-gh release view ${{ env.PACKAGE_VERSION }}
-echo "PACKAGE_VERSION_EXISTS=1" >> $GITHUB_ENV
-if [ ${{ env.PACKAGE_VERSION_EXISTS }} -eq 1 ]; then
-    echo "${{ env.PACKAGE_VERSION }} already exists"
+export PACKAGE_VERSION=v$(node -p -e "require('./package.json').version")
+set +e
+gh release view $PACKAGE_VERSION
+export EXIT_CODE=$?
+set -e
+if [ $EXIT_CODE -eq 0 ]; then
+    echo "$PACKAGE_VERSION already exists"
     exit 1
-else
-    exit 0
 fi
 ```
 
 ### publish-npm-package
 this will publish a npm package. it runs the following commands on the lts version of node (14.x currently).
 ```bash
-# gets the version number to deploy from the package.json file and sets as an environment variable
-echo "PACKAGE_VERSION=v$(node -p -e "require('./package.json').version")" >> $GITHUB_ENV
-
 yarn publish
 
-# creates a github release using the environment variable
-gh release create ${{ env.PACKAGE_VERSION }} --notes ""
+# creates a github release using package version
+export PACKAGE_VERSION=v$(node -p -e "require('./package.json').version")
+gh release create $PACKAGE_VERSION --notes ""
 ```

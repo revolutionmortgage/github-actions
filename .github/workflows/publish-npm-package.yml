@@ -20,11 +20,9 @@ jobs:
         with:
           node-version: "lts/*"
 
-      - name: set version environment variable
-        run: |
-          echo "PACKAGE_VERSION=v$(node -p -e "require('./package.json').version")" >> $GITHUB_ENV
-
       - run: yarn publish
 
       - name: "Create new release"
-        run: gh release create ${{ env.PACKAGE_VERSION }} --notes ""
+        run: |
+          export PACKAGE_VERSION=v$(node -p -e "require('./package.json').version")
+          gh release create $PACKAGE_VERSION --notes ""
