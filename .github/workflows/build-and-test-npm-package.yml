@@ -34,7 +34,7 @@ jobs:
           gh release view ${{ env.PACKAGE_VERSION }}
           export EXIT_CODE=$?
           set -e
-          if [ $EXIT_CODE }} -eq 0 ]; then
+          if [ $EXIT_CODE -eq 0 ]; then
             echo "${{ env.PACKAGE_VERSION }} already exists"
             exit 1
           else
