@@ -1,0 +1,30 @@
+name: publish npm package
+
+on:
+  workflow_call:
+    secrets:
+      npm_token:
+        required: true
+      github_token:
+        required: true
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    env:
+      NPM_TOKEN: ${{ secrets.npm_token }}
+      GITHUB_TOKEN: ${{ secrets.github_token }}
+    steps:
+      - name: download build artifact for deploying
+        uses: actions/download-artifact@v2
+        with:
+          name: build
+
+      - name: set version environment variable
+        run: |
+          echo "PACKAGE_VERSION=v$(node -p -e "require('./package.json').version")" >> $GITHUB_ENV
+
+      - name: "Create new release"
+        run: gh release create ${{ env.PACKAGE_VERSION }} --notes ""
+
+      - run: yarn publish
