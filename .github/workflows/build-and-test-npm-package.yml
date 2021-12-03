@@ -29,8 +29,7 @@ jobs:
 
       - name: "check if package version exists"
         continue-on-error: true
-        run: gh release view ${{ env.PACKAGE_VERSION }}
-
-      - name: "echo exit code"
-        run: echo $?
+        run: |
+          gh release view ${{ env.PACKAGE_VERSION }}
+          echo $?
 
