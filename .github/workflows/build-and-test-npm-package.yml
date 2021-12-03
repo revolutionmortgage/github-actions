@@ -14,6 +14,7 @@ jobs:
     env:
       NPM_TOKEN: ${{ secrets.npm_token }}
       GITHUB_TOKEN: ${{ secrets.github_token }}
+      PACKAGE_EXISTS: 0
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
@@ -31,5 +32,13 @@ jobs:
         continue-on-error: true
         run: |
           gh release view ${{ env.PACKAGE_VERSION }}
-          echo $?
+          echo "PACKAGE_VERSION_EXISTS=1"
+
+      - name: "validate package version"
+        run: |
+          if [ ${{ env.PACKAGE_VERSION_EXISTS }} -eq 1 ] then
+            exit 1
+          else
+            exit 0
+          fi
 
