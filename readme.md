@@ -31,6 +31,17 @@ this builds and tests a npm package. it runs the following commands on the lts v
 yarn install
 yarn build
 yarn test:unit
+
+# validate the package version number
+echo "PACKAGE_VERSION=v$(node -p -e "require('./package.json').version")" >> $GITHUB_ENV
+gh release view ${{ env.PACKAGE_VERSION }}
+echo "PACKAGE_VERSION_EXISTS=1" >> $GITHUB_ENV
+if [ ${{ env.PACKAGE_VERSION_EXISTS }} -eq 1 ]; then
+    echo "${{ env.PACKAGE_VERSION }} already exists"
+    exit 1
+else
+    exit 0
+fi
 ```
 
 ### publish-npm-package
