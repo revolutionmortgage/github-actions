@@ -23,11 +23,6 @@ jobs:
       - name: "remove dev dependencies"
         run: yarn install --production
 
-      - name: "Check for available package version"
-        run: |
-          echo "PACKAGE_VERSION=v$(node -p -e "require('./package.json').version")" >> $GITHUB_ENV
-          git ls-remote --tags origin ${{env.PACKAGE_VERSION}}
-
       - name: "build artifact"
         run: zip -r build.zip build package.json
 
