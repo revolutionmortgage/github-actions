@@ -12,7 +12,11 @@ jobs:
         with:
           node-version: "lts/*"
       
-      - uses: revolutionmortgage/github-actions/.github/actions/typescript-build-and-test
+      - run: yarn install
+      - run: yarn build
+      - run: yarn test:unit
+      - name: "remove dev dependencies"
+        run: yarn install --production
 
       - name: "Check for available package version"
         run: |
