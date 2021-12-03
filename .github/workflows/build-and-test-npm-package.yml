@@ -24,7 +24,17 @@ jobs:
       - run: yarn build
       - run: yarn test:unit
 
-      - run: echo "PACKAGE_VERSION=v$(node -p -e "require('./package.json').version")" >> $GITHUB_ENV
+      - name: "set version environment variable"
+        run: echo "PACKAGE_VERSION=v$(node -p -e "require('./package.json').version")" >> $GITHUB_ENV
 
       - name: "validate package version"
-        run: gh release view ${{ env.PACKAGE_VERSION }}
+        run: |
+          gh release view ${{ env.PACKAGE_VERSION }}
+          if [ $? -eq 0 ] then
+            echo "${{ env.PACKAGE_VERSION }} is invalid."
+            exit code 1
+          else
+            echo "${{ env.PACKAGE_VERSION }} is valid."
+            exit code 0
+          fi
+
