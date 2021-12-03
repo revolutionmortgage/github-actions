@@ -5,12 +5,15 @@ on:
     secrets:
       npm_token:
         required: true
+      github_token:
+        required: true
 
 jobs:
   build_and_test:
     runs-on: ubuntu-latest
     env:
       NPM_TOKEN: ${{ secrets.npm_token }}
+      GITHUB_TOKEN: ${{ secrets.github_token }}
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
