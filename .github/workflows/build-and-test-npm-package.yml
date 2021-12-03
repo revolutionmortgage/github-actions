@@ -33,7 +33,7 @@ jobs:
           export EXIT_CODE=$?
           set -e
           if [ $EXIT_CODE -eq 0 ]; then
-            echo "${{ env.PACKAGE_VERSION }} already exists"
+            echo "$PACKAGE_VERSION already exists"
             exit 1
           fi
 
