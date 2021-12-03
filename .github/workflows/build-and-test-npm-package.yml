@@ -28,4 +28,3 @@ jobs:
         run: |
           echo "PACKAGE_VERSION=v$(node -p -e "require('./package.json').version")" >> $GITHUB_ENV
           gh release list ${{ env.PACKAGE_VERSION }}
-          exit code !$?
