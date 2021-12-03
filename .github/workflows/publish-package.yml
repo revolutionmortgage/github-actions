@@ -20,6 +20,9 @@ jobs:
         with:
           name: build
 
+      - name: Unarchive build
+        run: unzip -q build.zip
+
       - name: set version environment variable
         run: |
           echo "PACKAGE_VERSION=v$(node -p -e "require('./package.json').version")" >> $GITHUB_ENV
