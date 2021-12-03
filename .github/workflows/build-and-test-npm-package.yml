@@ -37,6 +37,7 @@ jobs:
       - name: "validate package version"
         run: |
           if [ ${{ env.PACKAGE_VERSION_EXISTS }} -eq 1 ]; then
+            echo "${{ env.PACKAGE_VERSION }} already exists"
             exit 1
           else
             exit 0
