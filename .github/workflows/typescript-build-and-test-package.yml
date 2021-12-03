@@ -12,7 +12,7 @@ jobs:
         with:
           node-version: "lts/*"
       
-      - uses: ./.github/actions/typescript-build-and-test
+      - uses: revolutionmortgage/github-actions/.github/actions/typescript-build-and-test
 
       - name: "Check for available package version"
         run: |
