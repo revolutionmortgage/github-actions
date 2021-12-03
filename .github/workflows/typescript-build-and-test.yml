@@ -11,11 +11,7 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: "lts/*"
-      - run: yarn install
-      - run: yarn build
-      - run: yarn test:unit
-      - name: "remove dev dependencies"
-        run: yarn install --production
+      - uses: ./.github/actions/typescript-build-and-test
       - name: "build artifact"
         run: zip -r build.zip build node_modules
       - name: "upload artifact to github"

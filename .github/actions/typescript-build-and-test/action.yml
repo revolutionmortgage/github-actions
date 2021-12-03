@@ -1,0 +1,18 @@
+# Use this for building and running unit tests for a typescript project. You can then use the output of `yarn build` command to upload an artifact for an app or npm package.
+name: "Typescript - Build and Test"
+description: "Build and test typescript code."
+runs:
+  using: "composite"
+  steps:
+    - run: yarn install
+      shell: bash
+
+    - run: yarn build
+      shell: yarn build
+
+    - run: yarn test:unit
+      shell: bash
+
+    - name: "remove dev dependencies"
+      run: yarn install --production
+      shell: bash
