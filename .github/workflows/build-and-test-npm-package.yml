@@ -1,4 +1,4 @@
-name: build-and-test-package
+name: build and test npm package
 
 on:
   workflow_call:
