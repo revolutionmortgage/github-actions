@@ -10,8 +10,6 @@ on:
 
 jobs:
   build_and_test:
-    strategy:
-      fail-fast: false
     runs-on: ubuntu-latest
     env:
       NPM_TOKEN: ${{ secrets.npm_token }}
@@ -30,6 +28,7 @@ jobs:
         run: echo "PACKAGE_VERSION=v$(node -p -e "require('./package.json').version")" >> $GITHUB_ENV
 
       - name: "check if package version exists"
+        continue-on-error: true
         run: gh release view ${{ env.PACKAGE_VERSION }}
 
       - name: "package version available"
