@@ -25,10 +25,12 @@ jobs:
       - run: yarn build
       - run: yarn test:unit
 
-      - name: "check if package version exists"
+      - name: "set version environment variable"
+        run: echo "PACKAGE_VERSION=v$(node -p -e "require('./package.json').version")" >> $GITHUB_ENV
+
+      - name: "get package releases"
         continue-on-error: true
         run: |
-          echo "PACKAGE_VERSION=v$(node -p -e "require('./package.json').version")" >> $GITHUB_ENV
           gh release view ${{ env.PACKAGE_VERSION }}
           echo "PACKAGE_VERSION_EXISTS=1" >> $GITHUB_ENV
 
