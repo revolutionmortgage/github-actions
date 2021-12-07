@@ -1,0 +1,38 @@
+name: build and test npm package
+
+on:
+  workflow_call:
+    secrets:
+      npm_token:
+        required: true
+      github_token:
+        required: true
+
+jobs:
+  build_and_test:
+    runs-on: ubuntu-latest
+    env:
+      NPM_TOKEN: ${{ secrets.npm_token }}
+      GITHUB_TOKEN: ${{ secrets.github_token }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "lts/*"
+      
+      - run: yarn install
+      - run: yarn build
+      - run: yarn test:unit
+
+      - name: "validate package version"
+        run: |
+          export PACKAGE_VERSION=v$(node -p -e "require('./package.json').version")
+          set +e
+          gh release view $PACKAGE_VERSION
+          export EXIT_CODE=$?
+          set -e
+          if [ $EXIT_CODE -eq 0 ]; then
+            echo "$PACKAGE_VERSION already exists"
+            exit 1
+          fi
+

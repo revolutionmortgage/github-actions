@@ -1,0 +1,28 @@
+name: publish npm package
+
+on:
+  workflow_call:
+    secrets:
+      npm_token:
+        required: true
+      github_token:
+        required: true
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    env:
+      NPM_TOKEN: ${{ secrets.npm_token }}
+      GITHUB_TOKEN: ${{ secrets.github_token }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "lts/*"
+
+      - run: yarn publish
+
+      - name: "Create new release"
+        run: |
+          export PACKAGE_VERSION=v$(node -p -e "require('./package.json').version")
+          gh release create $PACKAGE_VERSION --notes ""
