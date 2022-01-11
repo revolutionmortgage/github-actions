@@ -2,6 +2,9 @@ name: build-and-test
 
 on:
   workflow_call:
+    secrets:
+      npm_token:
+        required: false
 
 jobs:
   build_and_test:
