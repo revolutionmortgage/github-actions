@@ -13,8 +13,8 @@ TODO: decide how to version these. most likely git tags
 ### lambda-deploy
 this just downloads a zip file called "build", which should have a file called "build.zip", which will get pushed to a lambda by name and region.  you have to pass in a github environment name to control how and when a deployment will go out. 
 
-### typescript-build-and-test
-this builds a typescript app up based on a very simple convention.  it runs the following commands on the lts version of node (14.x currently).
+### typescript-build-test-and-package
+this builds a typescript app up based on a very simple convention.  it runs the following commands on the lts version of node. it was formerly the `typescript-build-and-test@v1`.
 ```bash
 yarn install
 yarn build
@@ -23,6 +23,15 @@ yarn test:unit
 yarn install --production
 zip -r build.zip build node_modules
 # uploads build.zip to github artifact as "build"
+```
+
+### typescript-build-and-test
+this builds a typescript app up based on a very simple convention.  it runs the following commands on the lts version of node.
+```bash
+yarn install
+yarn lint
+yarn build
+yarn test:unit
 ```
 
 ### build-and-test-npm-package

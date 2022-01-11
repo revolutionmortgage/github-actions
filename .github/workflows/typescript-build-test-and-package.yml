@@ -1,0 +1,25 @@
+name: build-test-and-package
+
+on:
+  workflow_call:
+
+jobs:
+  build_and_test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "lts/*"
+      - run: yarn install
+      - run: yarn build
+      - run: yarn test:unit
+      - name: "remove dev dependencies"
+        run: yarn install --production
+      - name: "build artifact"
+        run: zip -r build.zip build node_modules
+      - name: "upload artifact to github"
+        uses: actions/upload-artifact@v2
+        with:
+          name: build
+          path: build.zip
