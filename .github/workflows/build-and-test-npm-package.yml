@@ -3,17 +3,17 @@ name: build and test npm package
 on:
   workflow_call:
     secrets:
-      npm_token:
+      npm-token:
         required: true
-      github_token:
+      github-token:
         required: true
 
 jobs:
   build_and_test:
     runs-on: ubuntu-latest
     env:
-      NPM_TOKEN: ${{ secrets.npm_token }}
-      GITHUB_TOKEN: ${{ secrets.github_token }}
+      NPM_TOKEN: ${{ secrets.npm-token }}
+      GITHUB_TOKEN: ${{ secrets.github-token }}
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
