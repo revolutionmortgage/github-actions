@@ -2,6 +2,12 @@ name: build-and-test
 
 on:
   workflow_call:
+    inputs:
+      run-integration-tests:
+        description: "flag to run `yarn test:int` command"
+        default: false
+        required: false
+        type: boolean
     secrets:
       npm-token:
         required: false
@@ -20,4 +26,7 @@ jobs:
       - run: yarn build
       - run: yarn lint
       - run: yarn test:unit
+      - name: integration tests
+        run: yarn test:int
+        if: ${{ inputs.run-integration-tests }}
       
