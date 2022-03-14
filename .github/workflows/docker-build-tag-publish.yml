@@ -1,0 +1,54 @@
+name: docker_build_test_publish
+
+on:
+  workflow_call:
+    inputs:
+      image-tag:
+        required: true
+        type: string
+    secrets:
+      npm-token:
+        required: true
+      aws-key:
+        required: true
+      aws-secret:
+        required: true
+      registry-hostname:
+        required: true
+
+jobs:
+  build_docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      # gain access to aws tools account
+      - uses: Fooji/create-aws-profile-action@v1
+        name: "Create aws credentials"
+        with:
+          profile: default
+          region: us-east-2
+          key: ${{ secrets.aws-key }}
+          secret: ${{ secrets.aws-secret }}
+
+      # gain access to ecr
+      - name: docker login to ecr
+        env:
+          REGISTRY_HOSTNAME: ${{ secrets.registry-hostname }}
+        run: |
+          aws ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin $REGISTRY_HOSTNAME
+
+      - name: build and tag image
+        env:
+          NPM_TOKEN: ${{ secrets.npm-token }}
+          REGISTRY_HOSTNAME: ${{ secrets.registry-hostname }}
+          IMAGE_TAG: ${{ inputs.image-tag }}
+        run: |
+          timestamp=$(date +%s)
+          sha=$(git rev-parse --short HEAD)
+          # replace bad chars that can't be in container tag
+          branch=$(echo "$GITHUB_REF_NAME" | sed 's/\//_/g')
+          tag="$REGISTRY_HOSTNAME/$IMAGE_TAG:$branch-$sha-$timestamp"
+          # build, tag, push
+          docker build --build-arg NPM_TOKEN=${NPM_TOKEN} . -t $tag
+          docker push $tag
