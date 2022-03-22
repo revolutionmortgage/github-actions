@@ -2,10 +2,21 @@ name: build-test-and-package
 
 on:
   workflow_call:
+    inputs:
+      run-integration-tests:
+        description: "flag to run `yarn test:int` command"
+        default: false
+        required: false
+        type: boolean
+    secrets:
+      npm-token:
+        required: false
 
 jobs:
   build_and_test:
     runs-on: ubuntu-latest
+    env:
+      NPM_TOKEN: ${{ secrets.npm-token }}
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
@@ -13,7 +24,11 @@ jobs:
           node-version: "lts/*"
       - run: yarn install
       - run: yarn build
+      - run: yarn lint
       - run: yarn test:unit
+      - name: integration tests
+        run: yarn test:int
+        if: ${{ inputs.run-integration-tests }}
       - name: "remove dev dependencies"
         run: yarn install --production
       - name: "build artifact"
