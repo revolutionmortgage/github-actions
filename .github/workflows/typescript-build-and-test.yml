@@ -8,6 +8,9 @@ on:
         default: false
         required: false
         type: boolean
+      working-directory:
+        type: string
+        required: false
     secrets:
       npm-token:
         required: false
@@ -17,6 +20,9 @@ jobs:
     runs-on: ubuntu-latest
     env:
       NPM_TOKEN: ${{ secrets.npm-token }}
+    defaults:
+      run:
+        working-directory: ${{ inputs.working-directory }}
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
