@@ -20,7 +20,7 @@ jobs:
       GITHUB_TOKEN: ${{ secrets.github-token }}
     defaults:
       run:
-        working-directory: ${{ inputs.working-directory }}
+        working-directory: ${{ inputs.working-directory }} || .
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
