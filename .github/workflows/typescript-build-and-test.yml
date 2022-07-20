@@ -11,6 +11,7 @@ on:
       working-directory:
         type: string
         required: false
+        default: ./
     secrets:
       npm-token:
         required: false
