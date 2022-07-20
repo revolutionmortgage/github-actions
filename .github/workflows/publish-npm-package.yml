@@ -2,6 +2,11 @@ name: publish npm package
 
 on:
   workflow_call:
+    inputs:
+      working-directory:
+        type: string
+        required: false
+        default: ./
     secrets:
       npm-token:
         required: true
@@ -11,6 +16,9 @@ on:
 jobs:
   publish:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ inputs.working-directory }}
     env:
       NPM_TOKEN: ${{ secrets.npm-token }}
       GITHUB_TOKEN: ${{ secrets.github-token }}
