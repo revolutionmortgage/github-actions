@@ -12,6 +12,10 @@ on:
         type: string
         required: false
         default: ./
+      node-version:
+        type: string
+        required: false
+        default: "lts/gallium"
     secrets:
       npm-token:
         required: false
@@ -25,10 +29,10 @@ jobs:
       run:
         working-directory: ${{ inputs.working-directory }}
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
         with:
-          node-version: "lts/*"
+          node-version: ${{ inputs.working-directory }}
           cache: "yarn"
       - run: yarn install
       - run: yarn build
