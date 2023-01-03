@@ -11,7 +11,7 @@ on:
       working-directory:
         type: string
         required: false
-        default: ./
+        default: .
       node-version:
         type: string
         required: false
@@ -34,6 +34,7 @@ jobs:
         with:
           node-version: ${{ inputs.node-version }}
           cache: "yarn"
+          cache-dependency-path: "${{ inputs.working-directory }}/yarn.lock"
       - run: yarn install
       - run: yarn build
       - run: yarn lint
