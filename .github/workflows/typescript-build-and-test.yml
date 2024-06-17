@@ -37,6 +37,7 @@ jobs:
           cache-dependency-path: "${{ inputs.working-directory }}/yarn.lock"
       - run: yarn install
       - run: yarn build
+      - run: yarn format
       - run: yarn lint
       - run: yarn test:unit
       - name: integration tests
