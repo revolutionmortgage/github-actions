@@ -10,6 +10,10 @@ on:
         type: string
         required: false
         default: ./
+      image-target:
+        type: string
+        required: false
+        default: ""
     secrets:
       npm-token:
         required: true
@@ -50,12 +54,15 @@ jobs:
           NPM_TOKEN: ${{ secrets.npm-token }}
           REGISTRY_HOSTNAME: ${{ secrets.registry-hostname }}
           IMAGE_TAG: ${{ inputs.image-tag }}
+          TARGET: ${{ inputs.image-target }}
         run: |
           timestamp=$(date +%s)
           sha=$(git rev-parse --short HEAD)
           # replace bad chars that can't be in container tag
           branch=$(echo "$GITHUB_REF_NAME" | sed 's/\//_/g')
           tag="$REGISTRY_HOSTNAME/$IMAGE_TAG:$branch-$sha-$timestamp"
+          # setup target if provided
+
           # build, tag, push
-          docker build --build-arg NPM_TOKEN=${NPM_TOKEN} . -t $tag
+          docker build --build-arg NPM_TOKEN=${NPM_TOKEN} . -t $tag --target "$TARGET"
           docker push $tag

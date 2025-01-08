@@ -11,7 +11,11 @@ on:
       working-directory:
         type: string
         required: false
-        default: ./
+        default: .
+      node-version:
+        type: string
+        required: false
+        default: "lts/gallium"
       override-integration-test-command:
         description: "override the default integration test command"
         required: false
@@ -29,13 +33,15 @@ jobs:
       run:
         working-directory: ${{ inputs.working-directory }}
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
         with:
-          node-version: "lts/*"
+          node-version: ${{ inputs.node-version }}
           cache: "yarn"
+          cache-dependency-path: "${{ inputs.working-directory }}/yarn.lock"
       - run: yarn install
       - run: yarn build
+      - run: yarn format
       - run: yarn lint
       - run: yarn test:unit
       - name: integration tests
