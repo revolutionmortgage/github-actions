@@ -64,5 +64,5 @@ jobs:
           # setup target if provided
 
           # build, tag, push
-          docker build --build-arg NPM_TOKEN=${NPM_TOKEN} . -t $tag --target "$TARGET"
+          docker build --secret id=npm-token,env=NPM_TOKEN . -t $tag --target "$TARGET"
           docker push $tag
