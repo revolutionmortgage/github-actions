@@ -14,6 +14,11 @@ on:
         type: string
         required: false
         default: ""
+      cache-buildx-yarn:
+        description: cache `.yarn/cache` to speed up builds based on yarn.lock.  you have to have the mount=type=cache in your dockerfile for this to work
+        type: boolean
+        required: false
+        default: false
     secrets:
       npm-token:
         required: true
@@ -32,6 +37,17 @@ jobs:
         working-directory: ${{ inputs.working-directory }}
     steps:
       - uses: actions/checkout@v3
+
+      - name: cache buildx
+        if: ${{ inputs.cache-buildx-yarn }}
+        uses: actions/cache@v4
+        with:
+          path: /tmp/${{inputs.image-tag}}-buildx-cache
+          key: ${{ runner.os }}-buildx-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
       # gain access to aws tools account
       - uses: Fooji/create-aws-profile-action@v1
@@ -55,6 +71,7 @@ jobs:
           REGISTRY_HOSTNAME: ${{ secrets.registry-hostname }}
           IMAGE_TAG: ${{ inputs.image-tag }}
           TARGET: ${{ inputs.image-target }}
+          CACHE_BUILDX_YARN: ${{ inputs.cache-buildx-yarn }}
         run: |
           timestamp=$(date +%s)
           sha=$(git rev-parse --short HEAD)
@@ -63,6 +80,12 @@ jobs:
           tag="$REGISTRY_HOSTNAME/$IMAGE_TAG:$branch-$sha-$timestamp"
           # setup target if provided
 
+          # set cache args if enabled
+          cache_args=""
+          if [ "$CACHE_BUILDX_YARN" = "true" ]; then
+            cache_args="--cache-to type=local,dest=/tmp/$IMAGE_TAG-buildx-cache --cache-from type=local,src=/tmp/$IMAGE_TAG-buildx-cache"
+          fi
+
           # build, tag, push
-          docker build --secret id=npm-token,env=NPM_TOKEN . -t $tag --target "$TARGET"
+          docker build --secret id=npm-token,env=NPM_TOKEN . -t $tag --target "$TARGET" $cache_args
           docker push $tag
