@@ -97,7 +97,7 @@ jobs:
           echo "Publish is set to: $PUBLISH"
           echo "\n\n"
           # build, tag
-          docker buildx build --secret id=npm-token,env=NPM_TOKEN -t $tag --target "$TARGET" $cache_args .
+          docker buildx build --secret id=npm-token,env=NPM_TOKEN -t $tag --target "$TARGET" $cache_args --load .
 
           # push if publish is true
           if [ "$PUBLISH" = "true" ]; then
