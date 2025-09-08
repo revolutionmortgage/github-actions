@@ -92,8 +92,12 @@ jobs:
             cache_args="--cache-to type=local,dest=/tmp/$IMAGE_TAG-buildx-cache --cache-from type=local,src=/tmp/$IMAGE_TAG-buildx-cache"
           fi
 
+          echo "Building and tagging image with tag: $tag"
+          echo "Cache args: $cache_args"
+          echo "Publish is set to: $PUBLISH"
+          echo "\n\n"
           # build, tag
-          docker buildx build --secret id=npm-token,env=NPM_TOKEN . -t $tag --target "$TARGET" $cache_args
+          docker buildx build --secret id=npm-token,env=NPM_TOKEN -t $tag --target "$TARGET" $cache_args .
 
           # push if publish is true
           if [ "$PUBLISH" = "true" ]; then
