@@ -93,7 +93,7 @@ jobs:
           fi
 
           # build, tag
-          docker build --secret id=npm-token,env=NPM_TOKEN . -t $tag --target "$TARGET" $cache_args
+          docker buildx build --secret id=npm-token,env=NPM_TOKEN . -t $tag --target "$TARGET" $cache_args
 
           # push if publish is true
           if [ "$PUBLISH" = "true" ]; then
