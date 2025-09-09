@@ -47,7 +47,7 @@ jobs:
         if: ${{ inputs.cache-buildx-yarn }}
         uses: actions/cache@v4
         with:
-          path: /tmp/${{inputs.image-tag}}-buildx-cache
+          path: /tmp/buildx-cache
           key: ${{ runner.os }}-buildx-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-buildx-
@@ -89,7 +89,7 @@ jobs:
           # set cache args if enabled
           cache_args=""
           if [ "$CACHE_BUILDX_YARN" = "true" ]; then
-            cache_args="--cache-to type=local,dest=/tmp/$IMAGE_TAG-buildx-cache --cache-from type=local,src=/tmp/$IMAGE_TAG-buildx-cache"
+            cache_args="--cache-to type=local,dest=/tmp/buildx-cache --cache-from type=local,src=/tmp/buildx-cache"
           fi
 
           echo "Building and tagging image with tag: $tag"
