@@ -14,6 +14,16 @@ on:
         type: string
         required: false
         default: ""
+      cache-buildx-yarn:
+        description: cache `.yarn/cache` to speed up builds based on yarn.lock.  you have to have the mount=type=cache in your dockerfile for this to work
+        type: boolean
+        required: false
+        default: false
+      publish:
+        description: 'If true, docker push will be run after build.'
+        type: boolean
+        required: false
+        default: true
     secrets:
       npm-token:
         required: true
@@ -32,6 +42,17 @@ jobs:
         working-directory: ${{ inputs.working-directory }}
     steps:
       - uses: actions/checkout@v3
+
+      - name: cache buildx
+        if: ${{ inputs.cache-buildx-yarn }}
+        uses: actions/cache@v4
+        with:
+          path: /tmp/buildx-cache
+          key: ${{ runner.os }}-buildx-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
       # gain access to aws tools account
       - uses: Fooji/create-aws-profile-action@v1
@@ -55,6 +76,8 @@ jobs:
           REGISTRY_HOSTNAME: ${{ secrets.registry-hostname }}
           IMAGE_TAG: ${{ inputs.image-tag }}
           TARGET: ${{ inputs.image-target }}
+          CACHE_BUILDX_YARN: ${{ inputs.cache-buildx-yarn }}
+          PUBLISH: ${{ inputs.publish }}
         run: |
           timestamp=$(date +%s)
           sha=$(git rev-parse --short HEAD)
@@ -63,6 +86,20 @@ jobs:
           tag="$REGISTRY_HOSTNAME/$IMAGE_TAG:$branch-$sha-$timestamp"
           # setup target if provided
 
-          # build, tag, push
-          docker build --secret id=npm-token,env=NPM_TOKEN . -t $tag --target "$TARGET"
-          docker push $tag
+          # set cache args if enabled
+          cache_args=""
+          if [ "$CACHE_BUILDX_YARN" = "true" ]; then
+            cache_args="--cache-to type=local,dest=/tmp/buildx-cache --cache-from type=local,src=/tmp/buildx-cache"
+          fi
+
+          echo "Building and tagging image with tag: $tag"
+          echo "Cache args: $cache_args"
+          echo "Publish is set to: $PUBLISH"
+          echo "\n\n"
+          # build, tag
+          docker buildx build --secret id=npm-token,env=NPM_TOKEN -t $tag --target "$TARGET" $cache_args --load .
+
+          # push if publish is true
+          if [ "$PUBLISH" = "true" ]; then
+            docker push $tag
+          fi
